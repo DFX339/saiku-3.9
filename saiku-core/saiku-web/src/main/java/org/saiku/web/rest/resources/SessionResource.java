@@ -126,6 +126,15 @@ public class SessionResource  {
 	  Map<String, Object> sess = null;
 	  try {
 		sess = sessionService.getSession();
+		//Add implements login without username and password. start
+	    if (sess.size()==0){
+	    	//not login
+	    	sessionService.login(req, "admin", "admin");
+	    	sess = sessionService.getSession();
+	    	log.debug("unlogin user login with admin " + sess);
+	    }
+	  //Add implements login without username and password. end
+	    
 	  } catch (Exception e) {
 		return Response.serverError().entity(e.getLocalizedMessage()).build();
 	  }

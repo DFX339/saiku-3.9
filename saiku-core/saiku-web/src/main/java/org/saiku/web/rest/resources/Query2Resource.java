@@ -17,7 +17,14 @@ package org.saiku.web.rest.resources;
 
 import org.saiku.olap.dto.SimpleCubeElement;
 import org.saiku.olap.dto.resultset.CellDataSet;
+import org.saiku.olap.query2.ThinAxis;
+import org.saiku.olap.query2.ThinHierarchy;
+import org.saiku.olap.query2.ThinLevel;
+import org.saiku.olap.query2.ThinMember;
 import org.saiku.olap.query2.ThinQuery;
+import org.saiku.olap.query2.ThinQueryModel;
+import org.saiku.olap.query2.ThinQueryModel.AxisLocation;
+import org.saiku.olap.query2.ThinSelection;
 import org.saiku.olap.util.SaikuProperties;
 import org.saiku.service.olap.ThinQueryService;
 import org.saiku.service.olap.drillthrough.DrillThroughResult;
@@ -35,6 +42,8 @@ import com.qmino.miredot.annotations.ReturnType;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.exception.ExceptionUtils;
+import org.olap4j.impl.NamedListImpl;
+import org.olap4j.metadata.NamedList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -43,8 +52,11 @@ import java.io.InputStream;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -181,6 +193,9 @@ public class Query2Resource {
     @Consumes({"application/json" })
     @Path("/execute")
     public QueryResult execute(ThinQuery tq) {
+    
+    	//add code to limit query date
+//    	tq = this.restrictQueryByDate(tq); //set date limit not effective
         try {
             if (thinQueryService.isMdxDrillthrough(tq)) {
                 Long start = (new Date()).getTime();
@@ -783,4 +798,146 @@ public class Query2Resource {
   public ThinQueryService getThinQueryService() {
     return thinQueryService;
   }
+  
+  
+  // add code for query limit
+  private ThinQuery restrictQueryByDate(ThinQuery tq) {
+	  
+		ThinQueryModel queryModel = tq.getQueryModel();
+	  	Map<AxisLocation, ThinAxis> axesMap = queryModel.getAxes();
+	  	
+	  	NamedList<ThinHierarchy> namedList = new NamedListImpl<ThinHierarchy>();
+	  	
+	  	ThinAxis filterAxis = axesMap.get(AxisLocation.FILTER);
+	  	List<ThinHierarchy> filterHie = filterAxis.getHierarchies();
+	  	
+	  	namedList = this.resetThinHierachy(filterHie);
+	  		
+	  	//将修改后的Row重新set到queryModel
+	  	if(namedList.size() > 0) {
+	  		
+			ThinAxis newFilterAxis = new ThinAxis(
+					AxisLocation.FILTER,
+					namedList,
+					filterAxis.isNonEmpty(),
+					filterAxis.getAggregators()
+					);
+			
+			axesMap.put(AxisLocation.FILTER,newFilterAxis);
+	  	}
+	  	
+	  	//将修改后的Row重新set到queryModel
+	  	if(namedList.size() == 0) {
+	  		
+	  		ThinAxis rowAxis = axesMap.get(AxisLocation.ROWS);
+	  	  	List<ThinHierarchy> rowHie = rowAxis.getHierarchies();
+	  	  	
+	  	  	namedList = this.resetThinHierachy(rowHie);
+	  		
+	  		if(namedList.size() > 0) {
+				ThinAxis newRowsAxis = new ThinAxis(
+						AxisLocation.ROWS,
+						namedList,
+						rowAxis.isNonEmpty(),
+						rowAxis.getAggregators()
+						);
+				
+				axesMap.put(AxisLocation.ROWS,newRowsAxis);
+	  		}	
+	  	}
+	  	
+	  	//if columns contained date member
+	  	//if contained and have not set the limit ,then add limit to one day ,if do not hava then add this column and limit to one day;
+	  	if(namedList.size() == 0) {
+	  		
+//	  		namedList.clear();
+	  		
+	    	ThinAxis colAxis = axesMap.get(AxisLocation.COLUMNS);
+	    	List<ThinHierarchy> colHie = colAxis.getHierarchies();
+	    	
+	    	namedList = this.resetThinHierachy(colHie);
+	    	
+	    	if(namedList.size() == 0) {
+	    		
+	    		//if list is empty,then column don't hava date ,then add colHie to list and enfore to add date member;
+	    		namedList.addAll(colHie);
+	    		
+	    		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+				String yesterday = format.format(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
+				
+				String newDateMdx = "[SaikuUseDate].[SaikuUseDate].["+yesterday+"]";
+				
+				ThinMember thinMember = new ThinMember(yesterday,newDateMdx,yesterday);
+	    		ThinHierarchy thinHie = new ThinHierarchy();
+	    		
+	    		thinHie.setName("[SaikuUseDate].[SaikuUseDate]");
+	    		
+	    		List<ThinMember> thinMemberList = new ArrayList<ThinMember>();
+				thinMemberList.add(thinMember);
+				ThinSelection selection = new ThinSelection();
+				selection.setMembers(thinMemberList);
+				selection.setType(ThinSelection.Type.INCLUSION);
+				ThinLevel thinLevel = new ThinLevel(yesterday,yesterday,selection,null);
+		//  			thinLevel.setSelection(selection);
+				Map<String,ThinLevel> mapLevel = new LinkedHashMap<String,ThinLevel>();
+				mapLevel.put("SaikuUseDate", thinLevel);
+		    		
+				thinHie.setLevels(mapLevel);
+				
+				namedList.add(thinHie);
+	    		ThinAxis newColAxis = new ThinAxis(
+	    				AxisLocation.COLUMNS,
+	    				namedList,
+	    				colAxis.isNonEmpty(),
+	    				colAxis.getAggregators()
+	    				);
+	    		
+	    		axesMap.put(AxisLocation.COLUMNS,newColAxis);
+	    	}
+	  	}
+	  	
+	  	return tq;
+	  }
+	  
+	  private NamedList<ThinHierarchy> resetThinHierachy(List<ThinHierarchy> hieList) {
+		  
+		  NamedList<ThinHierarchy> namedList = new NamedListImpl<ThinHierarchy>();
+		  boolean flag = false;
+		  
+		  for(ThinHierarchy hie : hieList) {
+		  		if(hie.getName().equals("[SaikuUseDate].[SaikuUseDate]")) {
+		    		
+		    		if(hie.getLevels().get("SaikuUseDate").getSelection() == null) {
+		    			SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+		    			String yesterday = format.format(new Date(new Date().getTime() - 24 * 60 * 60 * 1000));
+		    			
+		    			String newDateMdx = "[SaikuUseDate].[SaikuUseDate].["+yesterday+"]";
+		    			
+		    			ThinMember thinMember = new ThinMember(null,newDateMdx,yesterday);
+		    			
+		    			List<ThinMember> thinMemberList = new ArrayList<ThinMember>();
+		    			thinMemberList.add(thinMember);
+		    			ThinSelection selection = new ThinSelection();
+		    			selection.setMembers(thinMemberList);
+		    			//String name, String caption, ThinSelection selections, List<String> aggregators
+//		    			ThinLevel tmpThinLevel = hie.getLevels().get("日期");
+//		    			tmpThinLevel = new ThinLevel(tmpThinLevel.getName(),tmpThinLevel.getCaption(),selection,tmpThinLevel.getAggregators(),tmpThinLevel.getMeasureAggregators());
+//		    			Map<String,ThinLevel> tmpLevels = new HashMap<String,ThinLevel>();
+//		    			tmpLevels.put("日期",tmpThinLevel);
+//		    			hie.setLevels(tmpLevels);
+		    			hie.getLevels().get("SaikuUseDate").setSelection(selection);
+		    		}
+		    		
+		    		flag = true;
+		  		}
+		  		
+		  		namedList.add(hie);
+		  	}
+		  if(flag) return namedList;
+		  
+		  namedList.clear();
+		  return namedList;
+	  
+	  }
+ 
 }

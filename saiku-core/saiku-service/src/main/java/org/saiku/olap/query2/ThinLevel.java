@@ -10,6 +10,8 @@ public class ThinLevel extends AbstractThinQuerySet {
 	private String name;
 	private String caption;
 	private ThinSelection selection;
+	
+
 	private final List<String> aggregators = new ArrayList<>();
 	private final List<String> measureAggregators = new ArrayList<>();
 
@@ -29,6 +31,10 @@ public class ThinLevel extends AbstractThinQuerySet {
 		if (measureAggregators != null) {
       this.measureAggregators.addAll(measureAggregators);
     }
+	}
+  
+  public void setSelection(ThinSelection selection) {
+		this.selection = selection;
 	}
 
 	@Override
