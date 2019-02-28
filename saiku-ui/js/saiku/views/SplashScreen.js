@@ -24,9 +24,12 @@ var SplashScreen = Backbone.View.extend({
         'click .head'           : 'click_head',
         'click .beg_tut'        : 'run_tour'
     },
-
+    
+    
     template: _.template(
-        '<div id="splash">' +
+    		'<div id="splash">'+
+			'</div>'
+    		/*  '<div id="splash">' +
             '<nav>' +
                 '<ul>' +
                     '<li class="active"><a class="welcome head" href="#">Welcome</a></li>' +
@@ -96,7 +99,7 @@ var SplashScreen = Backbone.View.extend({
                     '<p>To find out more visit our <a href="http://meteorite.bi" target="_blank">site</a> or <a href="mailto:info@meteorite.bi">schedule a call</a> with one of us and we can show you why you should choose Saiku Enterprise!</p>' +
                 '</section>' +
             '</section>' +
-        '</div>'
+        '</div>' 	*/
     ),
 
     initialize: function(args) {

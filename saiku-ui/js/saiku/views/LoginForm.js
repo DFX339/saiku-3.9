@@ -26,7 +26,7 @@ var LoginForm = Modal.extend({
             '<input type="text" id="username" name="username">' +
             '<label for="password" class="i18n">Password</label>' +
             '<input type="password" id="password" name="password">' +
-            '<% if (Settings.EVALUATION_PANEL_LOGIN) { %>' +
+            /*'<% if (Settings.EVALUATION_PANEL_LOGIN) { %>' +
                 '<div class="eval-panel">' +
                     '<a href="#eval_login" class="i18n" id="eval-login">Evaluation Login</a>' +
                     '<div class="eval-panel-user clearfix" hidden>' +
@@ -37,7 +37,7 @@ var LoginForm = Modal.extend({
                         '</ul>' +
                     '</div>' +
                 '</div>' +
-            '<% } %>' +
+            '<% } %>' + */
         '</form>'
     )(),
 
