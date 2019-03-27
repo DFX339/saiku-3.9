@@ -48,9 +48,9 @@ var Toolbar = Backbone.View.extend({
             self.render();
         }
         else{
-            self.logo = "<h1 id='logo'>"+
+            /*self.logo = "<h1 id='logo'>"+
                 "<a href='http://www.meteorite.bi/' title='Saiku - Next Generation Open Source Analytics' target='_blank' class='sprite'>Saiku</a>"+
-                "</h1>";
+                "</h1>";*/
             self.render();
         }
     },
@@ -126,7 +126,7 @@ var Toolbar = Backbone.View.extend({
      * Go to the issue tracker
      */
     issue_tracker: function() {
-        window.open('http://jira.meteorite.bi/');
+//        window.open('http://jira.meteorite.bi/');
         return false;
     },
 
@@ -144,7 +144,7 @@ var Toolbar = Backbone.View.extend({
      * Force go to the Meteorite BI site
      */
     site: function() {
-        window.open('http://www.meteorite.bi/');
+//        window.open('http://www.meteorite.bi/');
         return false;
     }
 });
