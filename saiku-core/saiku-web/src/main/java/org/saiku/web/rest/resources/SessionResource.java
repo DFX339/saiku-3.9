@@ -23,6 +23,8 @@ import com.qmino.miredot.annotations.ReturnType;
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Component;
 
 import java.util.Map;
@@ -124,15 +126,16 @@ public class SessionResource  {
     public Response getSession(@Context HttpServletRequest req) {
 
 	  Map<String, Object> sess = null;
-	  try {
+	  
+		try {
 		sess = sessionService.getSession();
 		//Add implements login without username and password. start
-	    if (sess.size()==0){
-	    	//not login
-	    	sessionService.login(req, "admin", "admin");
-	    	sess = sessionService.getSession();
-	    	log.debug("unlogin user login with admin " + sess);
-	    }
+//	    if (sess.size()==0){
+//	    	//not login
+//	    	sessionService.login(req, "admin", "admin");
+//	    	sess = sessionService.getSession();
+//	    	log.debug("unlogin user login with admin " + sess);
+//	    }
 	  //Add implements login without username and password. end
 	    
 	  } catch (Exception e) {

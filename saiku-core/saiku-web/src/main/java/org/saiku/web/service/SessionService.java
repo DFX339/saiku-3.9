@@ -17,7 +17,6 @@
 package org.saiku.web.service;
 
 import org.apache.commons.lang.StringUtils;
-
 import org.saiku.repository.ScopedRepo;
 import org.saiku.service.ISessionService;
 import org.saiku.service.license.ILicenseUtils;
