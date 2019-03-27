@@ -28,7 +28,8 @@
         <security:authentication-provider ref="daoAuthenticationProvider" />
     </security:authentication-manager>
 
-    <bean id="daoAuthenticationProvider"
+
+    <!-- <bean id="daoAuthenticationProvider"
           class="org.springframework.security.authentication.dao.DaoAuthenticationProvider">
         <property name="userDetailsService">
             <ref bean="userDetailsService" />
@@ -36,8 +37,18 @@
         <property name="passwordEncoder">
             <ref bean="passwordEncoder" />
         </property>
-    </bean>
-
+    </bean> -->
+ <bean id="daoAuthenticationProvider"
+          class="org.saiku.service.util.security.authentication.UmServiceProvider">
+        <property name="userDetailsService">
+            <ref bean="userDetailsService" />
+        </property>
+        <property name="passwordEncoder">
+            <ref bean="passwordEncoder" />
+        </property>
+    </bean> 
+    
+   
     <bean id="userDetailsService"
           class="org.springframework.security.core.userdetails.jdbc.JdbcDaoImpl">
         <property name="dataSource">

@@ -80,11 +80,12 @@
     </bean>
 
     <bean id="sessionService" class="org.saiku.web.service.SessionService">
-        <property name="sessionRepo" ref="sessionRepo"/>
         <property name="authenticationManager" ref="authenticationManager"/>
+       <property name="sessionRepo" ref="sessionRepo"/>
         <property name="authorisationPredicate" ref="authorisationPredicate"/>
         <property name="l" ref="licenseUtilsBean"/>
-        <property name="orbisAuthEnabled" value="${orbis.auth.enabled}"/>
+        <property name="orbisAuthEnabled" value="${orbis.auth.enabled}"/> 
+        <!-- <property name="allowAnonymous" value="true" />   -->
     </bean>
 
     <bean id="securityContextPersistenceFilter" class="org.springframework.security.web.context.SecurityContextPersistenceFilter"/>

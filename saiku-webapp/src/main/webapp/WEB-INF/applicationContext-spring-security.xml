@@ -10,5 +10,6 @@
      http://www.springframework.org/schema/context
      http://www.springframework.org/schema/context/spring-context.xsd">
 
-	<import resource="applicationContext-spring-security-jdbc.xml"/>
+	<import resource="applicationContext-spring-security-jdbc.xml"/> 
+	<!-- <import resource="applicationContext-spring-security-cas.xml"/> -->
 </beans>

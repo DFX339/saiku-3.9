@@ -2,6 +2,7 @@
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:security="http://www.springframework.org/schema/security"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
        xsi:schemaLocation="http://www.springframework.org/schema/security http://www.springframework.org/schema/security/spring-security-4.0.xsd
                http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd">
 
@@ -10,21 +11,26 @@
 	    <property name="useReferer" value="true" />
 	</bean>
 	
+  <!--return the success url-->
   <bean id="serviceProperties"
         class="org.springframework.security.cas.ServiceProperties">
     <property name="service"
-        value="http://HOSTNAME:PORT/saiku/j_spring_cas_security_check"/>
+        value="http://10.6.70.78:8080"/>
+<!--         value="http://HOSTNAME:PORT/saiku/j_spring_cas_security_check"/> -->
     <property name="sendRenew" value="false"/>
   </bean>
   
+ <!-- CAS figure out sso login url --> 
 <bean id="casEntryPoint"
     class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
-  <property name="loginUrl" value="http://HOSTNAME:PORT/cas/login"/>
+  <property name="loginUrl" value="http://10.6.6.52/imodule-sso-server/sso/login"/>
+<!--   <property name="loginUrl" value="http://HOSTNAME:PORT/cas/login"/> -->
   <property name="serviceProperties" ref="serviceProperties"/>
 </bean> 
 
 
-	<bean id="casAuthenticationFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">
+ <!-- cas authentication filter-->
+ <bean id="casAuthenticationFilter" class="org.springframework.security.cas.web.CasAuthenticationFilter">
     <property name="authenticationManager" ref="authenticationManager" />
     <property name="authenticationFailureHandler">
       <bean class="org.springframework.security.web.authentication.SimpleUrlAuthenticationFailureHandler">
@@ -43,21 +49,26 @@
 		</property>
 	</bean>
 	
+	<!-- CAS figure out sso server url --> 
 	<bean id="casProcessingFilterEntryPoint"
 		class="org.springframework.security.cas.web.CasAuthenticationEntryPoint">
 		<property name="loginUrl"
-			value="http://HOSTNAME:PORT/cas/login" />
+			value="http://10.6.6.52/imodule-sso-server/sso/login" />
+<!-- 			value="http://HOSTNAME:PORT/cas/login" /> -->
 		<property name="serviceProperties" ref="serviceProperties" />
 	</bean>
 	
-<bean id="ticketValidator"
+	<!-- config ticket validator -->
+	<bean id="ticketValidator"
 		class="org.jasig.cas.client.validation.Cas20ServiceTicketValidator">
-    <constructor-arg index="0" value="http://localhost:81/cas" />
+    <constructor-arg index="0" value="http://10.6.6.52/imodule-sso-server/sso/verify" />
+<!--     <constructor-arg index="0" value="http://localhost:81/cas" /> -->
 	</bean>
-<bean id="casAuthenticationProvider"
+	
+	<bean id="casAuthenticationProvider"
 		class="org.springframework.security.cas.authentication.CasAuthenticationProvider">
 		<property name="userDetailsService" ref="userDetailsService" />
-    <property name="serviceProperties" ref="serviceProperties" />
+    	<property name="serviceProperties" ref="serviceProperties" />
 		<property name="ticketValidator" ref="ticketValidator" />
 		<property name="key"
 			value="my_password_for_this_auth_provider_only" />
@@ -79,28 +90,24 @@
             </value>
         </property>
     </bean>
+    
 	<bean id="dataSource"
           class="org.springframework.jdbc.datasource.DriverManagerDataSource">
-        <property name="driverClassName" value="net.sourceforge.jtds.jdbc.Driver" />
-        <property name="url"
-                  value=""/>
-        <property name="username" value="" />
+        <property name="driverClassName" value="org.h2.Driver" />
+        <property name="url" value="jdbc:h2:../../data/saiku;MODE=MySQL"/>
+        <property name="username" value="sa" />
         <property name="password" value="" />
     </bean>
-	<!-- Automatically receives AuthenticationEvent messages -->
+    
+	 <!-- Automatically receives AuthenticationEvent messages -->
 	 <bean id="loggerListener"
 			class="org.springframework.security.access.event.LoggerListener" /> 
 	
 		<bean id="authenticationEntryPoint"
-    class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
-    <property name="realmName" value="Pentaho Realm" />
-</bean>
+    		class="org.springframework.security.web.authentication.www.BasicAuthenticationEntryPoint">
+   	 		<property name="realmName" value="Pentaho Realm" />
+		</bean>
 	
-		<!--<bean id="anonymousProcessingFilter"
-						class="org.springframework.security.web.authentication.AnonymousAuthenticationFilter">
-						<constructor-arg index="0" value="foobar" />
-						
-		</bean>-->
 	 <security:authentication-manager alias="authenticationManager">
         <security:authentication-provider ref="casAuthenticationProvider" />
     </security:authentication-manager>
