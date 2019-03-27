@@ -494,6 +494,11 @@ var WorkspaceToolbar = Backbone.View.extend({
     export_xls: function(event) {
 		if(this.workspace.query.name!=undefined){
 			var filename = this.workspace.query.name.substring(this.workspace.query.name.lastIndexOf('/')+1).slice(0, -5);
+			var paramsURI = Saiku.URLParams.paramsURI(); //get the param from url
+			if(paramsURI.startdate != null && paramsURI.startdate != undefined && paramsURI.enddate != null && paramsURI.enddate != undefined){
+				var datename = (paramsURI.startdate).substring(-1,10).replace(/-/g,'') +"-"+ (paramsURI.enddate).substring(-1,10).replace(/-/g,'');//获取参数中的日期
+				filename = filename.replace('.','') + datename + ".";//将参数中的日期添加到下载的文件名中
+			}
 			window.location = Settings.REST_URL +
 			this.workspace.query.url() + "/export/xls/" + this.workspace.query.getProperty('saiku.olap.result.formatter')+"?exportname=" + "\"" + encodeURIComponent(filename)+"xls" + "\"";
 		}
@@ -508,6 +513,11 @@ var WorkspaceToolbar = Backbone.View.extend({
     export_csv: function(event) {
 		if(this.workspace.query.name!=undefined){
 			var filename = this.workspace.query.name.substring(this.workspace.query.name.lastIndexOf('/')+1).slice(0, -6);
+			var paramsURI = Saiku.URLParams.paramsURI(); //get the param from url
+			if(paramsURI.startdate != null && paramsURI.startdate != undefined && paramsURI.enddate != null && paramsURI.enddate != undefined){
+				var datename = (paramsURI.startdate).substring(-1,10).replace(/-/g,'') +"-"+ (paramsURI.enddate).substring(-1,10).replace(/-/g,'');//获取参数中的日期
+				filename = filename.replace('.','') + datename + ".";//将参数中的日期添加到下载的文件名中
+			}
 			window.location = Settings.REST_URL +
 			this.workspace.query.url() + "/export/csv/" + this.workspace.query.getProperty('saiku.olap.result.formatter')+"?exportname=" + "\"" + encodeURIComponent(filename) + "\"";
 		}
@@ -522,6 +532,11 @@ var WorkspaceToolbar = Backbone.View.extend({
     export_pdf: function(event) {
 		if(this.workspace.query.name!=undefined){
 			var filename = this.workspace.query.name.substring(this.workspace.query.name.lastIndexOf('/')+1).slice(0, -6);
+			var paramsURI = Saiku.URLParams.paramsURI(); //get the param from url
+			if(paramsURI.startdate != null && paramsURI.startdate != undefined && paramsURI.enddate != null && paramsURI.enddate != undefined){
+				var datename = (paramsURI.startdate).substring(-1,10).replace(/-/g,'') +"-"+ (paramsURI.enddate).substring(-1,10).replace(/-/g,'');//获取参数中的日期
+				filename = filename.replace('.','') + datename + ".";//将参数中的日期添加到下载的文件名中
+			}
 			window.location = Settings.REST_URL +
 			this.workspace.query.url() + "/export/pdf/" + this.workspace.query.getProperty('saiku.olap.result.formatter')+"?exportname=" + "\"" + encodeURIComponent(filename) + "\"";
 		}
