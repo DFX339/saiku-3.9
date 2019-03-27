@@ -181,7 +181,27 @@ var Query = Backbone.Model.extend({
         delete this.model.queryModel.axes['FILTER'].name;
 */
         //console.log('query', JSON.stringify(exModel));
-
+        
+      //根據用戶輸入的開始日期與結束日期查詢範圍數據
+		var dimensionArr = exModel.queryModel.axes.ROWS.hierarchies; //取出行信息中的所有维度信息 dimension,用一个数组接收
+		for(var i=0;i<dimensionArr.length;i++){
+			//判断维度信息中是否有countdate这个时间维度（这是固定的）
+			if(dimensionArr[i]!=null && dimensionArr[i].dimension == "countdate" ){
+				var paramsURI = Saiku.URLParams.paramsURI(); //get the param from url
+				//判断参数是否为空
+				if(paramsURI.startdate != null && paramsURI.startdate != undefined && paramsURI.startdate != ""&&
+					paramsURI.enddate != null && paramsURI.enddate != undefined && paramsURI.enddate != ""){
+					var startdate=paramsURI.startdate;
+					var enddate=paramsURI.enddate;
+					//更改level下的mdx表达式(使用開始日期與結束日期來控制過濾數據)
+					dimensionArr[i].levels.countdate.mdx="[countdate].[countdate].[countdate].["+startdate+"]:[countdate].[countdate].[countdate].["+enddate+"]";
+					
+					//需要清除之前默認展示本週數據的過濾腳本信息
+					exModel.queryModel.axes.ROWS.filters=[];
+				}
+			}
+		}
+		
         this.result.save({},{ contentType: "application/json", data: JSON.stringify(exModel), error: function() {
             Saiku.ui.unblock();
             var errorMessage = '<span class="i18n">Error executing query. Please check the server logs or contact your administrator!</span>';

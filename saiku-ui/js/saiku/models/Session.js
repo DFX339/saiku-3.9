@@ -200,7 +200,7 @@ var Session = Backbone.Model.extend({
         this.destroy({async: false });
         //console.log("REFRESH!");
         document.location.reload(false);
-        delete this.id;
+
 
     },
 
