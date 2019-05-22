@@ -285,10 +285,16 @@
 			<artifactId>hibernate-jpa-2.1-api</artifactId>
 		</dependency>
 		<!--<dependency> <groupId>net.thucydides</groupId> <artifactId>thucydides-core</artifactId> 
-			</dependency> -->
+			</dependency> --> <!-- 20190312 to avoid jar conflict -->
 		<dependency>
 			<groupId>net.serenity-bdd</groupId>
 			<artifactId>serenity-core</artifactId>
+			<exclusions>
+				<exclusion>
+					<groupId>org.bouncycastle</groupId>
+					<artifactId>bcprov-jdk15on</artifactId>
+				</exclusion>
+			</exclusions>
 		</dependency>
 		<dependency>
 			<groupId>org.jbehave</groupId>
@@ -387,7 +393,81 @@
 			<artifactId>marklogic-xcc</artifactId>
 			<version>8.0.6</version>
 		</dependency>
+		 <!-- https://mvnrepository.com/artifact/mysql/mysql-connector-java -->
+	<dependency>
+	    <groupId>mysql</groupId>
+	    <artifactId>mysql-connector-java</artifactId>
+	    <version>5.1.17</version>
+	</dependency> 
+	
+	<dependency>
+	    <groupId>soap</groupId>
+	    <artifactId>soap</artifactId>
+	    <version>2.3</version>
+	</dependency>
+	
+	<!-- add in  2019-03-11,for validate password use UM system -->
+	<dependency>
+       <groupId>com.saiku.ws</groupId>
+	  <artifactId>saiku-um-ws</artifactId>
+	  <version>1.0</version>
+    </dependency>
+    
+     <dependency>
+			<groupId>xml-apis</groupId>
+			<artifactId>xml-apis</artifactId>
+			<version>1.4.01</version>
+		</dependency>
+	<!-- https://mvnrepository.com/artifact/org.apache.axis/axis -->
+	<!-- <dependency>
+	    <groupId>org.apache.axis</groupId>
+	    <artifactId>axis</artifactId>
+	    <version>1.4</version>
+	</dependency>
+	
+	https://mvnrepository.com/artifact/javax.xml/jaxrpc-api
+	<dependency>
+	    <groupId>javax.xml</groupId>
+	    <artifactId>jaxrpc-api</artifactId>
+	    <version>1.1</version>
+	</dependency>
+	
+	https://mvnrepository.com/artifact/commons-discovery/commons-discovery
+	<dependency>
+	    <groupId>commons-discovery</groupId>
+	    <artifactId>commons-discovery</artifactId>
+	    <version>0.2</version>
+	</dependency>
+	
+	https://mvnrepository.com/artifact/commons-logging/commons-logging
+	<dependency>
+	    <groupId>commons-logging</groupId>
+	    <artifactId>commons-logging</artifactId>
+	    <version>1.1.1</version>
+	</dependency>
+	
+	<dependency>
+		<groupId>xml-apis</groupId>
+		<artifactId>xml-apis</artifactId>
+		<version>1.4.01</version>
+	</dependency>
+	
+	https://mvnrepository.com/artifact/wsdl4j/wsdl4j
+	<dependency>
+	    <groupId>wsdl4j</groupId>
+	    <artifactId>wsdl4j</artifactId>
+	    <version>1.5.1</version>
+	</dependency>
+	
+	https://mvnrepository.com/artifact/soap/soap
+	<dependency>
+	    <groupId>soap</groupId>
+	    <artifactId>soap</artifactId>
+	    <version>2.3</version>
+	</dependency> -->
+	
 	</dependencies>
+	
 	<repositories>
 		<!-- MarkLogic repository -->
 		<repository>
